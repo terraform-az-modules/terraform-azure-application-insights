@@ -160,15 +160,9 @@ variable "web_test_enable" {
   description = "Enables or disables creation of web availability tests."
 }
 
-variable "web_test_name" {
-  type        = list(string)
-  default     = ["google"]
-  description = "List of names for the availability tests."
-}
-
 variable "list_of_test_urls" {
   type        = list(string)
-  default     = ["https://www.google.com"]
+  default     = ["https://www.google.com", "https://www.github.com"]
   description = "List of URLs to use in the availability tests. Example: [\"https://test1.example.com\", \"https://test2.example.com/app\"]"
 }
 
@@ -256,10 +250,22 @@ variable "log_analytics_destination_type" {
   description = "Possible values are AzureDiagnostics and Dedicated. Default is AzureDiagnostics. When set to Dedicated, logs sent to a Log Analytics workspace will go into resource-specific tables instead of the legacy AzureDiagnostics table."
 }
 
-variable "category" {
+variable "log_category" {
   type        = string
   default     = null
   description = "The name of a Diagnostic Log Category or Category Group for this resource."
+}
+
+variable "metric_category" {
+  type        = string
+  default     = "AllMetrics"
+  description = "The category for enabled metrics"
+}
+
+variable "log_category_group" {
+  type        = string
+  default     = "AllLogs"
+  description = "The category group for enabled logs"
 }
 
 variable "storage_account_id" {

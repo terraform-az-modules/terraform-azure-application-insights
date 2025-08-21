@@ -14,16 +14,18 @@ module "labels" {
   extra_tags      = var.extra_tags
 }
 
-resource "random_uuid" "parent" {}
+resource "random_uuid" "main" {
+  count = var.enabled ? 1 : 0
+}
 
 resource "random_uuid" "test_guids" {
   count   = var.enabled && var.web_test_enable ? length(var.list_of_test_urls) : 0
   keepers = { url = var.list_of_test_urls[count.index] }
 }
 
-resource "azurerm_application_insights" "application_insights" {
+resource "azurerm_application_insights" "main" {
   count                                 = var.enabled ? 1 : 0
-  name                                  = var.resource_position_prefix ? format("appi-%s", local.name) : format("%s-appi", local.name)
+  name                                  = var.resource_position_prefix ? format("appsights-%s", local.name) : format("%s-appsights", local.name)
   location                              = var.location
   resource_group_name                   = var.resource_group_name
   application_type                      = var.application_type
@@ -42,10 +44,10 @@ resource "azurerm_application_insights" "application_insights" {
 
 resource "azurerm_application_insights_web_test" "main" {
   count                   = var.enabled && var.web_test_enable ? length(var.list_of_test_urls) : 0
-  name                    = element(var.web_test_name, count.index)
-  location                = azurerm_application_insights.application_insights[0].location
+  name                    = local.web_test_names[count.index]
+  location                = var.location
   resource_group_name     = var.resource_group_name
-  application_insights_id = azurerm_application_insights.application_insights[0].id
+  application_insights_id = azurerm_application_insights.main[0].id
   kind                    = var.kind
   frequency               = var.frequency
   timeout                 = var.timeout
@@ -54,7 +56,7 @@ resource "azurerm_application_insights_web_test" "main" {
   geo_locations           = var.geo_locations
   description             = var.description
   configuration = format("%s%s%s",
-    format(var.header, random_uuid.parent.result, var.description),
+    format(var.header, random_uuid.main[0].result, var.description),
     format(replace(var.test_body, "PARSEDEPS", var.parse_deps), random_uuid.test_guids[count.index].result, var.list_of_test_urls[count.index]), var.footer
   )
 }
@@ -62,18 +64,18 @@ resource "azurerm_application_insights_web_test" "main" {
 resource "azurerm_monitor_diagnostic_setting" "main" {
   count                          = var.enabled && var.diagnostic_setting_enable ? 1 : 0
   name                           = var.resource_position_prefix ? format("appi-diag-setting-%s", local.name) : format("%s-appi-diag-setting", local.name)
-  target_resource_id             = azurerm_application_insights.application_insights[0].id
+  target_resource_id             = azurerm_application_insights.main[0].id
   storage_account_id             = var.storage_account_id
   eventhub_name                  = var.eventhub_name
   eventhub_authorization_rule_id = var.eventhub_authorization_rule_id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
   log_analytics_destination_type = var.log_analytics_destination_type
   enabled_metric {
-    category = "AllMetrics"
+    category = var.metric_category
   }
   enabled_log {
-    category       = var.category
-    category_group = "AllLogs"
+    category       = var.log_category
+    category_group = var.log_category_group
   }
   lifecycle {
     ignore_changes = [log_analytics_destination_type]
