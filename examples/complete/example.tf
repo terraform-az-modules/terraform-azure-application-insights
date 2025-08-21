@@ -29,9 +29,6 @@ module "log-analytics" {
 
 module "application-insights" {
   source                     = "../.."
-  name                       = "core"
-  environment                = "dev"
-  label_order                = ["name", "environment", "location"]
   resource_group_name        = module.resource_group.resource_group_name
   location                   = module.resource_group.resource_group_location
   workspace_id               = module.log-analytics.workspace_id
