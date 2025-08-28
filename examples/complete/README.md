@@ -1,8 +1,8 @@
 <!-- BEGIN_TF_DOCS -->
 
-# Terraform Azure Module Template
+# Terraform Azure Application Insights
 
-This directory contains an example usage of the **terraform-azure-module-template**. It demonstrates how to use the module with default settings or with custom configurations.
+This directory contains an example usage of the **terraform-azure-application-insights**. It demonstrates how to use the module with default settings or with custom configurations.
 
 ---
 
@@ -11,7 +11,7 @@ This directory contains an example usage of the **terraform-azure-module-templat
 | Name      | Version   |
 |-----------|-----------|
 | Terraform | >= 1.6.6  |
-| Azurerm   | >= 3.116.0|
+| Azurerm   | >= 4.31.0 |
 
 ---
 
@@ -23,7 +23,11 @@ None specified in this example.
 
 ## 📦 Modules
 
-None specified in this example.
+| Name                  | Source                                             | Version |
+|-----------------------|----------------------------------------------------|---------|
+| resource_group        | terraform-az-modules/resource-group/azure          | 1.0.0   |
+| log-analytics         | terraform-az-modules/log-analytics/azure           | 1.0.0   |
+| application-insights  | ../..                                              | n/a     |
 
 ---
 
@@ -41,6 +45,12 @@ No input variables are defined in this example.
 
 ## 📤 Outputs
 
-No outputs are defined in this example.
+| Name                   | Description                                                        |
+|------------------------|--------------------------------------------------------------------|
+| app_insights_id        | The ID of the Application Insights component                       |
+| app_insights_app_id    | The App ID associated with the Application Insights component      |
+| instrumentation_key    | The Instrumentation Key for this Application Insights component    |
+| connection_string      | The Connection String for this Application Insights component      |
+
 
 <!-- END_TF_DOCS -->
