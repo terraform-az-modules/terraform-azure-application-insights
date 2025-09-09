@@ -12,5 +12,9 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">=4.31.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6" # pick a version or constraint
+    }
   }
 }
